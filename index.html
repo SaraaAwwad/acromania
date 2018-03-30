@@ -54,7 +54,7 @@
                 <textarea class="form-control" id="message" required></textarea>
                 <br />
                 <input type="submit" id="submitMsg" class="btn btn-primary" value="Send Message" />
-                <input type="submit" id="submitWhisper" class="btn btn-primary" style="background-color:blueviolet" value="Whisper" />
+                <input type="submit" id="submitWhisper" class="btn btn-primary" style="background-color:plum" value="Whisper" />
               </div>
             </form>
         </div>
@@ -97,7 +97,7 @@
         $submitWhisper.click(function(e){
           e.preventDefault();
           //console.log("submitted");
-          socket.emit('send message', $message.val());
+          socket.emit('send whisper', $message.val());
           $message.val(' ');
         });
 
@@ -105,13 +105,15 @@
           $chat.append('<div class="card card-body bg-light"> <strong>'+data.user+"</strong>"+data.msg+'</div> <br/>');
         });
 
+        socket.on('new whisper', function(data){
+          $chat.append('<div class="card card-body" style="background-color: pink"> <strong>'+data.user+"<i>*whispers*</i> </strong> "+data.msg+'</div> <br/>');
+        });
+
         $userForm.submit(function(e){
           e.preventDefault();
-          //console.log("submitted");
           socket.emit('new user', $username.val(), function(data){
             if(data){
               $userFormArea.hide();
-              //$messageArea.show();
               $msgContainer.show();
             }
           });
@@ -137,16 +139,16 @@
         function startRound(){
           $chat.append('<div class="card card-body" style="background-color: plum"> <strong> Server Bot: </strong> Game is Starting </div> <br/>');
           $roundStarted = true;
-          play();
+         // play();
         }
         
-        function play(){
+        /*function play(){
           var $i=0;
           while($i<3 && $roundStarted){
            // setTimeout(function(){ alert("Hello"); }, 9000);
             alert("Round"+(i+1)+": ABCD"); 
           }
-        }
+        }*/
 
         function endRound(){
           $chat.append('<div class="card card-body" style="background-color: plum"> <strong> Server Bot: </strong> Waiting for more players to start game.. </div> <br/>');

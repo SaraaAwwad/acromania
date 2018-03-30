@@ -3,6 +3,9 @@ var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
 
+var acroGame = require('./acro-game');
+var user = require('./user');
+
 users = [];
 connections = [];
 
@@ -30,6 +33,12 @@ io.sockets.on('connection', function(socket){
     socket.on('send message', function(data){
         console.log(data);
         io.sockets.emit('new message', {msg: data, user: socket.username});
+    });
+
+    //Send Whisper
+    socket.on('send whisper', function(data){
+        console.log("whisper"+data);
+        socket.emit('new whisper', {msg: data, user: socket.username});
     });
 
     //New User
