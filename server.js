@@ -9,6 +9,8 @@ var user = require('./user');
 users = [];
 connections = [];
 
+var game = new acroGame(connections);
+
 server.listen(process.env.PORT || 3000);
 console.log('Server running...');
 
@@ -48,9 +50,17 @@ io.sockets.on('connection', function(socket){
         users.push(socket.username);
         updateUsernames();
     });
+
    
     function updateUsernames(){
         io.sockets.emit('get users', users);
+        game.updateUsernames(connections);
+
+        if(connections.length > 1 && !game.isRunning()){
+            game.gameStart();
+        }else if (connections.length == 1 ){
+            game.gameEnd();
+        }
     }
 });
 
