@@ -38,11 +38,13 @@ io.sockets.on('connection', function(socket){
     });
 
     //Send Whisper
-    socket.on('send whisper', function(data){
+/*    socket.on('send whisper', function(data){
         console.log("whisper"+data);
+        //whisper user sent game or vote..
+        game.userTurn(socket, data);
         socket.emit('new whisper', {msg: data, user: socket.username});
     });
-
+*/
     //New User
     socket.on('new user', function(data, callback){
         callback(true);
@@ -64,3 +66,10 @@ io.sockets.on('connection', function(socket){
     }
 });
 
+/*setInterval(function(){
+    if(game.isRunning())
+    {console.log("runn");
+    game.alphabetGenerator();}
+
+},120000);
+*/

@@ -62,8 +62,7 @@
 </div>
 
 
-    <script>
-alert("hi");    
+  <script>  
 $(function(){
     var socket = io.connect();
     var $messageForm = $('#messageForm');
@@ -90,7 +89,7 @@ $(function(){
     $submitWhisper.click(function(e){
       e.preventDefault();
       //console.log("submitted");
-      socket.emit('send whisper', $message.val());
+      socket.emit('turn', $message.val());
       $message.val(' ');
     });
 
