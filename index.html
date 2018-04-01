@@ -91,6 +91,8 @@ $(function(){
       //console.log("submitted");
       socket.emit('turn', $message.val());
       $message.val(' ');
+      $("#submitWhisper").attr("disabled", true);
+ 
     });
 
     socket.on('new message', function(data){
@@ -122,6 +124,7 @@ $(function(){
     });
 
     socket.on('bot message', function(data){
+      $("#submitWhisper").removeAttr("disabled");      
         $chat.append('<div class="card card-body" style="background-color: plum"> <strong> Server Bot: </strong>'+data+'</div> <br/>');
     });
   });

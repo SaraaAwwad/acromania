@@ -4,8 +4,11 @@ class AcroGame{
         this.connections = connections;
         this._gameRun = false;
         this._currentText = "";
-        this._turns = [];
+        this._turns =  [];
         this._conLength = 0;
+        this._voteTime = false;
+        this._votes =  [];
+        this._counter = [];
     }
 
     gameStart(){
@@ -23,15 +26,24 @@ class AcroGame{
 
     gameEnd(){
         this._gameRun = false;
-        this._turns = [];
-        this._sendToUsers("Waiting for more players to start game..");        
+        this._sendToUsers("Waiting for more players to start game..");      
+        this.reset();  
+    }
+
+    reset(){
+        this._currentText = "";
+        this._turns =  [];
+        this._conLength = 0;
+        this._voteTime = false;
+        this._votes =  [];
+        this._counter = [];  
     }
 
     updateUsernames(connections){
         this.connections = connections;
         this.connections.forEach((user, idx) => {
             user.on('turn', (turn) => {
-              this._userTurn(idx, turn);
+              this._userTurn(idx, turn, user.username);
             });
           });
     }
@@ -49,7 +61,6 @@ class AcroGame{
     }
     
     async alphabetGenerator(){
-        //stopping condition
 
         while(this.isRunning()){
             var text = "";
@@ -61,49 +72,152 @@ class AcroGame{
                 this._currentText = text; //for testing later..
                 this._sendToUsers(text);
 
-            var res = await this._checkGameOver();
-            console.log("ana rg3t alphagenerator tani");
+            var res = await this._checkAnswers();
+            var votes = await this._checkVotes();
+            //next round..
+            //reset
+            this.reset();
         }
     }
 
-     _checkGameOver() {
+    _checkAnswers() {
         return new Promise(resolve => {
           setTimeout(() => {
             resolve('resolved');
           
             var answers = "Answers: <br>";
-
-            for (var key in this._turns) {
-                answers+= key + "-" + this._turns[key];
-                answers+= "<br>";
+            var i=0;
+            for(i =0; i< this._turns.length; i++){
+                answers += (i+1) + "-" + this._turns[i][0] + "<br>";
             }
-            //console.log(answers);
-            this._sendToUsers(answers);        
-            this._turns = [];
-            this._currentText="";
 
-          }, 12000);
+            if(i==0){
+                //dont accept votes?
+                answers+="No given answers.";
+            }
+            this._sendToUsers(answers);    
+            this._voteTime = true;    
+          }, 60000);
         });
       }
 
+    _checkVotes(){
+
+        return new Promise(resolve => {
+            setTimeout(() => {
+              resolve('resolved');
+              this._voteTime = false;  
+              var counter = Array(this.connections.length).fill(0);
+              var votes = "Results: <br>";
+                for(var i=0; i<this._votes.length; i++){
+                    var answerIndex = this._votes[i][0];
+                    console.log("i="+i+",answerindex:"+answerIndex);
+                    var userIndex = this._turns[answerIndex][1];
+                    console.log(counter[userIndex]);
+                    counter[userIndex]+=1;
+                }
+                
+                for (var key in counter){
+                    votes+= this.connections[key].username + " : " + counter[key]+" <br> ";
+                }
+                
+              this._sendToUsers(votes);      
+            }, 60000);
+          });
+    }
+
     //user whispers..
-    _userTurn(userIndex, turn){
-        //check if already whispered a valid answer
-        if (this._turns[userIndex]!=null){
-            this._sendToUser(userIndex, "You already played!");
+    _userTurn(userIndex, turn, username){
+
+        if(this.isRunning()){
+            if(this._voteTime){
+                this._addVote(userIndex, turn);
+            }else{
+                this._addAnswer(userIndex, turn, username);            
+            }
+        }else{
+            this._sendToUser(userIndex, `You Whispered: ${turn}`);
+        }
+    }
+
+    _addVote(userIndex, turn){
+        
+        if(this._checkVoteSubmission(userIndex)){
+            this._sendToUser(userIndex, "Vote already submitted..");
             return;
         }
-        //check if valid 
-        //--
 
-        //add to answers
-        this._turns[userIndex] = turn;
+        turn--;
+
+        if(!this._checkVoteValidation(turn, userIndex))
+        {
+            this._sendToUser(userIndex, "Please enter a valid vote..");    
+            return;        
+        }
+        
+        console.log("votes before: "+this._votes.length);
+        this._votes[this._votes.length] = [turn, userIndex];
+        console.log("votes after: "+this._votes.length);
+        
+        this._sendToUser(userIndex, `You voted for: ${this._turns[turn][2]}`);
+        
+    }
+    
+    _checkVoteSubmission(userIndex){
+        for(var i =0 ; i< this._votes.length; i++){
+            if(this._votes[i][1]==userIndex)
+            return true;
+        }
+        return false;
+    }
+
+    _checkVoteValidation(vote, userIndex){
+        if (isNaN(vote)){
+            console.log("mesh rakam")
+            return false;
+        }
+        else if (this._turns.length > vote){
+            if (this._turns[vote][1] == userIndex){
+                console.log("mesh le nafsak ya ghabi");
+                return false;
+            }
+            return true;
+        }
+
+        return false;
+    }
+
+    _addAnswer(userIndex, turn, username){
+        if(this._checkAnswerSubmission(userIndex)){
+            this._sendToUser(userIndex, "Answer already submitted..");
+            return;
+        }
+
+        if(!this._checkAnswerValidation(turn)){
+            this._sendToUser(userIndex, "Please enter a valid answer.");
+            return;
+        }
+
+        var len = this._turns.length;
+        console.log("before: "+len);
+        this._turns[len] = [turn, userIndex, username];
+        console.log("after: "+  this._turns.length);
+    
         this._sendToUser(userIndex, `You Whispered: ${turn}`);
         
-        /*for (var key in this._turns) {
-            var value = this._turns[key];
-            console.log(key, value);
-        }*/
+    }
+
+    _checkAnswerSubmission(userIndex){
+        for(var i =0 ; i< this._turns.length; i++){
+            if(this._turns[i][1]==userIndex)
+            return true;
+        }
+        return false;
+    }
+
+    _checkAnswerValidation(answer){
+
+        return true;
     }
 
 }

@@ -4,7 +4,6 @@ var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
 
 var acroGame = require('./acro-game');
-var user = require('./user');
 
 users = [];
 connections = [];
@@ -20,6 +19,7 @@ app.get('/', function(req, res){
 
 io.sockets.on('connection', function(socket){
     connections.push(socket);
+    
     console.log('connected: %s sockets connected', connections.length);
 
     //disconnected
@@ -57,7 +57,6 @@ io.sockets.on('connection', function(socket){
     function updateUsernames(){
         io.sockets.emit('get users', users);
         game.updateUsernames(connections);
-
         if(connections.length > 1 && !game.isRunning()){
             game.gameStart();
         }else if (connections.length == 1 ){
@@ -65,11 +64,3 @@ io.sockets.on('connection', function(socket){
         }
     }
 });
-
-/*setInterval(function(){
-    if(game.isRunning())
-    {console.log("runn");
-    game.alphabetGenerator();}
-
-},120000);
-*/
