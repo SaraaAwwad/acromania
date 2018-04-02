@@ -25,3 +25,20 @@ body{
       height:450px;
       overflow-y:scroll;
   }
+
+  .vertical-center {
+    min-height: 100%;  /* Fallback for browsers do NOT support vh unit */
+    min-height: 100vh; /* These two lines are counted as one :-)       */
+  
+    display: flex;
+    align-items: center;
+  }
+
+  .dot {
+    height: 15px;
+    width: 15px;
+    background-color:greenyellow;
+    border-radius: 50%;
+    margin-right: 10px;
+    display: inline-block;
+  }

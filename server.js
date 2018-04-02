@@ -20,7 +20,6 @@ app.use(express.static(clientPath));
 app.use(express.static('public'));
 
 
-
 app.get('/', function(req, res){
     res.sendFile(__dirname + '/index.html');
 });
@@ -39,7 +38,9 @@ io.sockets.on('connection', function(socket){
     //Send Message
     socket.on('send message', function(data){
         console.log(data);
-        io.sockets.emit('new message', {msg: data, user: socket.username});
+        //io.sockets.emit('new message', {msg: data, user: socket.username});
+        socket.broadcast.emit('new message', {msg: data, user: socket.username});
+        socket.emit('new message', {msg: data, user: "me"});
     });
 
     //New User

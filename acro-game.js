@@ -1,7 +1,7 @@
 class AcroGame{
     
     constructor(connections){
-        this.connections = connections;
+        this._players = connections;
         this._gameRun = false;
         this._currentText = "";
         this._turns =  [];
@@ -35,21 +35,22 @@ class AcroGame{
         this._votes =  [];
     }
 
-    updateUsernames(connections){
-        this.connections = connections;
-        this.connections.forEach((user, idx) => {
-            user.on('turn', (turn) => {
-              this._userTurn(idx, turn, user.username);
-            });
-          });
+    addUser(socket, idx){
+        socket.on('turn', (turn)=>{
+            this._userTurn(idx, turn, socket.username);
+        });
+    }
+
+    removeUser(socket){
+        this._players.splice(this._players.indexOf(socket), 1);
     }
 
     _sendToUser(UserIndex, msg) {
-        this.connections[UserIndex].emit('bot message', msg);
+        this._players[UserIndex].emit('bot message', msg);
       }
           
     _sendToUsers(msg) {
-        this.connections.forEach((connection) => {
+        this._players.forEach((connection) => {
           connection.emit('bot message', msg);
         });
         console.log(msg);
@@ -71,7 +72,6 @@ class AcroGame{
             if(this._turns.length>0)
             {var votes = await this._checkVotes();}
            
-            //Next round: reset
             this.reset();
         }
     }
@@ -86,7 +86,7 @@ class AcroGame{
             for(i =0; i< this._turns.length; i++){
                 answers += (i+1) + "-" + this._turns[i][0] + "<br>";
             }
-
+            
             if(i==0){
                 answers+="No given answers.";
             }
@@ -102,18 +102,16 @@ class AcroGame{
             setTimeout(() => {
               resolve('resolved');
               this._voteTime = false;  
-              var counter = Array(this.connections.length).fill(0);
+              var counter = Array(this._players.length).fill(0);
               var votes = "Results: <br>";
                 for(var i=0; i<this._votes.length; i++){
                     var answerIndex = this._votes[i][0];
-                   // console.log("i="+i+",answerindex:"+answerIndex);
                     var userIndex = this._turns[answerIndex][1];
-                    //console.log(counter[userIndex]);
                     counter[userIndex]+=1;
                 }
                 
                 for (var key in counter){
-                    votes+= this.connections[key].username + " : " + counter[key]+" <br> ";
+                    votes+= this._players[key].username + " : " + counter[key]+" <br> ";
                 }
                 
               this._sendToUsers(votes);      
@@ -216,12 +214,10 @@ class AcroGame{
         if(usrAnswer.length == matchingPattern.length){
             for(var i =0; i<usrAnswer.length; i++){
                 if(usrAnswer[i][0]!= matchingPattern[i]){
-                   // console.log("fi wa7da ghalat--"+usrAnswer[i][0]+":"+matchingPattern[i]);
                     return false;
                 }            
             }
         }else{
-            //console.log("kolo ghalat");
             return false;
         }
 
