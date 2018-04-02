@@ -1,7 +1,7 @@
 var express = require('express');
 var app = express();
 var server = require('http').createServer(app);
-var io = require('socket.io').listen(server);
+var io = require('socket.io')(server, { wsEngine: 'ws' });
 
 var acroGame = require('./acro-game');
 
@@ -26,10 +26,7 @@ app.get('/', function(req, res){
 });
 
 io.sockets.on('connection', function(socket){
-    connections.push(socket);
     
-    console.log('connected: %s sockets connected', connections.length);
-
     //disconnected
     socket.on('disconnect', function(data){
         //remove from online users
@@ -45,27 +42,31 @@ io.sockets.on('connection', function(socket){
         io.sockets.emit('new message', {msg: data, user: socket.username});
     });
 
-    //Send Whisper
-/*    socket.on('send whisper', function(data){
-        console.log("whisper"+data);
-        //whisper user sent game or vote..
-        game.userTurn(socket, data);
-        socket.emit('new whisper', {msg: data, user: socket.username});
-    });
-*/
     //New User
     socket.on('new user', function(data, callback){
-        callback(true);
-        socket.username = data;
-        users.push(socket.username);
-        updateUsernames();
+        
+        if (users.indexOf(data) > -1) {
+            
+            callback(false);
+        }else{
+            connections.push(socket);
+            console.log('connected: %s sockets connected', connections.length);
+            callback(true);
+            socket.username = data;
+            users.push(socket.username);
+            game.addUser(socket, connections.indexOf(socket));
+            updateUsernames();
+        } 
+
+        
     });
 
    
-    function updateUsernames(){
+    function updateUsernames(){       
         io.sockets.emit('get users', users);
-        game.updateUsernames(connections);
+       // game.updateUsernames(connections);
         if(connections.length > 1 && !game.isRunning()){
+            console.log(connections.length);
             game.gameStart();
         }else if (connections.length == 1 ){
             game.gameEnd();
