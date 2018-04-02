@@ -47,7 +47,6 @@ class AcroGame{
     _sendToUser(UserIndex, msg) {
         this.connections[UserIndex].emit('bot message', msg);
       }
-    
           
     _sendToUsers(msg) {
         this.connections.forEach((connection) => {
@@ -63,13 +62,14 @@ class AcroGame{
             var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
                     
             for (var i = 0; i < 5; i++)
-                text += possible.charAt(Math.floor(Math.random() * possible.length)) + " ";
+                text += possible.charAt(Math.floor(Math.random() * possible.length));
 
                 this._currentText = text; 
                 this._sendToUsers(text);
 
             var res = await this._checkAnswers();
-            var votes = await this._checkVotes();
+            if(this._turns.length>0)
+            {var votes = await this._checkVotes();}
            
             //Next round: reset
             this.reset();
@@ -209,16 +209,19 @@ class AcroGame{
     }
 
     _checkAnswerValidation(answer){
+        var answer = answer.toUpperCase();
         var usrAnswer = answer.split(" ");
-        var matchingPattern = this._currentText.split(" ");
+        var matchingPattern = this._currentText;
 
         if(usrAnswer.length == matchingPattern.length){
             for(var i =0; i<usrAnswer.length; i++){
                 if(usrAnswer[i][0]!= matchingPattern[i]){
+                   // console.log("fi wa7da ghalat--"+usrAnswer[i][0]+":"+matchingPattern[i]);
                     return false;
                 }            
             }
         }else{
+            //console.log("kolo ghalat");
             return false;
         }
 
