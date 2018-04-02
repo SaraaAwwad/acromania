@@ -13,7 +13,13 @@ var game = new acroGame(connections);
 server.listen(process.env.PORT || 3000);
 console.log('Server running...');
 
+
+const clientPath = `${__dirname}`;
+
+app.use(express.static(clientPath));
 app.use(express.static('public'));
+
+
 
 app.get('/', function(req, res){
     res.sendFile(__dirname + '/index.html');
