@@ -5,7 +5,6 @@ class AcroGame{
         this._gameRun = false;
         this._currentText = "";
         this._turns =  [];
-        this._conLength = 0;
         this._voteTime = false;
         this._votes =  [];
     }
@@ -32,7 +31,6 @@ class AcroGame{
     reset(){
         this._currentText = "";
         this._turns =  [];
-        this._conLength = 0;
         this._voteTime = false;
         this._votes =  [];
     }
@@ -65,15 +63,15 @@ class AcroGame{
             var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
                     
             for (var i = 0; i < 5; i++)
-                text += possible.charAt(Math.floor(Math.random() * possible.length));
+                text += possible.charAt(Math.floor(Math.random() * possible.length)) + " ";
 
-                this._currentText = text; //for testing later..
+                this._currentText = text; 
                 this._sendToUsers(text);
 
             var res = await this._checkAnswers();
             var votes = await this._checkVotes();
-            //next round..
-            //reset
+           
+            //Next round: reset
             this.reset();
         }
     }
@@ -90,7 +88,6 @@ class AcroGame{
             }
 
             if(i==0){
-                //dont accept votes?
                 answers+="No given answers.";
             }
             this._sendToUsers(answers);    
@@ -171,12 +168,10 @@ class AcroGame{
 
     _checkVoteValidation(vote, userIndex){
         if (isNaN(vote)){
-            console.log("mesh rakam")
             return false;
         }
         else if (this._turns.length > vote){
             if (this._turns[vote][1] == userIndex){
-                console.log("mesh le nafsak ya ghabi");
                 return false;
             }
             return true;
@@ -214,6 +209,18 @@ class AcroGame{
     }
 
     _checkAnswerValidation(answer){
+        var usrAnswer = answer.split(" ");
+        var matchingPattern = this._currentText.split(" ");
+
+        if(usrAnswer.length == matchingPattern.length){
+            for(var i =0; i<usrAnswer.length; i++){
+                if(usrAnswer[i][0]!= matchingPattern[i]){
+                    return false;
+                }            
+            }
+        }else{
+            return false;
+        }
 
         return true;
     }
