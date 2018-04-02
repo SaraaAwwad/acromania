@@ -8,7 +8,6 @@ class AcroGame{
         this._conLength = 0;
         this._voteTime = false;
         this._votes =  [];
-        this._counter = [];
     }
 
     gameStart(){
@@ -36,7 +35,6 @@ class AcroGame{
         this._conLength = 0;
         this._voteTime = false;
         this._votes =  [];
-        this._counter = [];  
     }
 
     updateUsernames(connections){
@@ -111,9 +109,9 @@ class AcroGame{
               var votes = "Results: <br>";
                 for(var i=0; i<this._votes.length; i++){
                     var answerIndex = this._votes[i][0];
-                    console.log("i="+i+",answerindex:"+answerIndex);
+                   // console.log("i="+i+",answerindex:"+answerIndex);
                     var userIndex = this._turns[answerIndex][1];
-                    console.log(counter[userIndex]);
+                    //console.log(counter[userIndex]);
                     counter[userIndex]+=1;
                 }
                 

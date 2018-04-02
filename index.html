@@ -19,6 +19,24 @@
         #msgContainer{
           display:none;
         }
+        .title {
+          display: inline;
+          position: relative;
+          font: 120px Helvetica, Sans-Serif;
+          letter-spacing: -5px;
+          color: rgba(0,0,255,0.5); 
+        }
+
+        .title:after {
+          content: "Acromania";
+          position: absolute; left: 10px; top: 5px;
+          color: rgba(255,0,0,0.5);   
+        }
+
+        .chat{
+            height:450px;
+            overflow-y:scroll;
+        }
     </style>
   </head>
   <body>
@@ -39,6 +57,20 @@
     </div>
 
 <div class="container" id="msgContainer">
+  <div class="row">
+    <div class="col-md-2"></div>
+    <div class="col-md-2">
+        <img src="http://localhost:3000/images/group2.png" alt="wahed" width="100" height="100" style="margin-top:30px;">
+    </div>
+    <div class="col-md-6">
+        <div class="page-header">
+            <h1 class=" title text-center">Acromania</h1>  
+    
+            <hr>    
+          </div>
+    </div>
+  </div>
+  
       <div id="messageArea" class="row">
         <div class="col-md-4">
           <div class="card card-body bg-light">
@@ -97,10 +129,7 @@ $(function(){
 
     socket.on('new message', function(data){
       $chat.append('<div class="card card-body bg-light"> <strong>'+data.user+"</strong>"+data.msg+'</div> <br/>');
-    });
-
-    socket.on('new whisper', function(data){
-      $chat.append('<div class="card card-body" style="background-color: pink"> <strong>'+data.user+"<i>*whispers*</i> </strong> "+data.msg+'</div> <br/>');
+      scrollDown();
     });
 
     $userForm.submit(function(e){
@@ -126,7 +155,12 @@ $(function(){
     socket.on('bot message', function(data){
       $("#submitWhisper").removeAttr("disabled");      
         $chat.append('<div class="card card-body" style="background-color: plum"> <strong> Server Bot: </strong>'+data+'</div> <br/>');
+        scrollDown();
     });
+
+    function scrollDown(){
+     $chat.scrollTop($chat.get(0).scrollHeight);
+    }
   });
   </script>
   </body>
