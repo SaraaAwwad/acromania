@@ -96,7 +96,7 @@ class AcroGame{
             }
             this._sendToUsers(answers);    
             this._voteTime = true;    
-          }, 126000);
+          }, 90000);
         });
       }
 
@@ -119,7 +119,7 @@ class AcroGame{
                 }
                 
               this._sendToUsers(votes);      
-            }, 120000);
+            }, 90000);
           });
     }
 

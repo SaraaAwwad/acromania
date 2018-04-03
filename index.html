@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Chat</title>
+    <title>Acromania Chat</title>
+    <link rel="icon" href="images/group.png">
     <link rel="stylesheet" 
     href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
+
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="lib/css/emoji.css" rel="stylesheet">
 
     <link rel="stylesheet" type="text/css" href="css/style.css">
   </head>
@@ -92,10 +96,13 @@
             <form id="messageForm">
               <div class="form-group">
                 <label> Enter Message </label>
-                <textarea class="form-control" id="message" required></textarea>
+                <p class="lead emoji-picker-container">
+                    <textarea class="form-control" rows="15" id="message" data-emojiable="true"></textarea>
+                  </p>
                 <br />
                 <input type="submit" id="submitMsg" class="btn btn-primary" value="Send Message" />
                 <input type="submit" id="submitWhisper" class="btn btn-primary" style="background-color:plum" value="Whisper" />
+                <br><br><br>
               </div>
             </form>
         </div>
@@ -103,5 +110,22 @@
 </div>
 
   <script src="client.js"></script>
+  <script src="lib/js/config.js"></script>
+  <script src="lib/js/util.js"></script>
+  <script src="lib/js/jquery.emojiarea.js"></script>
+  <script src="lib/js/emoji-picker.js"></script>
+
+  <script>
+      $(function() {
+        // Initializes and creates emoji set from sprite sheet
+        window.emojiPicker = new EmojiPicker({
+          emojiable_selector: '[data-emojiable=true]',
+          assetsPath: 'lib/img/',
+          popupButtonClasses: 'fa fa-smile-o'
+        });
+   
+        window.emojiPicker.discover();
+      });
+    </script>
   </body>
 </html>
