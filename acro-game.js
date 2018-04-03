@@ -92,11 +92,11 @@ class AcroGame{
             if(i==0){
                 answers+="No given answers.";
             }else{
-                answer+=", Whisper me your votes quickly!";
+                answers+=", Whisper me your votes quickly!";
             }
             this._sendToUsers(answers);    
             this._voteTime = true;    
-          }, 126000);
+          }, 60000);
         });
       }
 
@@ -119,7 +119,7 @@ class AcroGame{
                 }
                 
               this._sendToUsers(votes);      
-            }, 120000);
+            }, 90000);
           });
     }
 
