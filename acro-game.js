@@ -66,6 +66,8 @@ class AcroGame{
                 text += possible.charAt(Math.floor(Math.random() * possible.length));
 
                 this._currentText = text; 
+                text+=", Whisper me your answers quickly!";
+
                 this._sendToUsers(text);
 
             var res = await this._checkAnswers();
@@ -86,13 +88,15 @@ class AcroGame{
             for(i =0; i< this._turns.length; i++){
                 answers += (i+1) + "-" + this._turns[i][0] + "<br>";
             }
-            
+
             if(i==0){
                 answers+="No given answers.";
+            }else{
+                answer+=", Whisper me your votes quickly!";
             }
             this._sendToUsers(answers);    
             this._voteTime = true;    
-          }, 60000);
+          }, 126000);
         });
       }
 
@@ -115,7 +119,7 @@ class AcroGame{
                 }
                 
               this._sendToUsers(votes);      
-            }, 60000);
+            }, 120000);
           });
     }
 
