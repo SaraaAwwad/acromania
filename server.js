@@ -9,7 +9,7 @@ users = [];
 connections = [];
 
 var game = new acroGame(connections);
-
+var i = 0;
 server.listen(process.env.PORT || 3000);
 console.log('Server running...');
 
@@ -47,7 +47,6 @@ io.sockets.on('connection', function(socket){
     socket.on('new user', function(data, callback){
         
         if (users.indexOf(data) > -1) {
-            
             callback(false);
         }else{
             connections.push(socket);
@@ -55,10 +54,10 @@ io.sockets.on('connection', function(socket){
             callback(true);
             socket.username = data;
             users.push(socket.username);
-            game.addUser(socket, connections.indexOf(socket));
+            game.addUser(socket, i);
+            i++;
             updateUsernames();
         } 
-
         
     });
 

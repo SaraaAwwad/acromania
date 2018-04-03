@@ -36,8 +36,9 @@ class AcroGame{
     }
 
     addUser(socket, idx){
+
         socket.on('turn', (turn)=>{
-            this._userTurn(idx, turn, socket.username);
+            this._userTurn(idx, turn, socket);
         });
     }
 
@@ -96,7 +97,7 @@ class AcroGame{
             }
             this._sendToUsers(answers);    
             this._voteTime = true;    
-          }, 60000);
+          }, 80000);
         });
       }
 
@@ -119,28 +120,28 @@ class AcroGame{
                 }
                 
               this._sendToUsers(votes);      
-            }, 90000);
+            }, 60000);
           });
     }
 
     //user whispers..
-    _userTurn(userIndex, turn, username){
-
+    _userTurn(userIndex, turn, user){
+console.log("id= "+userIndex);
         if(this.isRunning()){
             if(this._voteTime){
-                this._addVote(userIndex, turn);
+                this._addVote(userIndex, turn, user);
             }else{
-                this._addAnswer(userIndex, turn, username);            
+                this._addAnswer(userIndex, turn, user);            
             }
         }else{
-            this._sendToUser(userIndex, `You Whispered: ${turn}`);
+            this._sendToUser(this._players.indexOf(user), `You Whispered: ${turn}`);
         }
     }
 
-    _addVote(userIndex, turn){
+    _addVote(userIndex, turn, user){
         
         if(this._checkVoteSubmission(userIndex)){
-            this._sendToUser(userIndex, "Vote already submitted..");
+            this._sendToUser(this._players.indexOf(user), "Vote already submitted..");
             return;
         }
 
@@ -148,7 +149,7 @@ class AcroGame{
 
         if(!this._checkVoteValidation(turn, userIndex))
         {
-            this._sendToUser(userIndex, "Please enter a valid vote..");    
+            this._sendToUser(this._players.indexOf(user), "Please enter a valid vote..");    
             return;        
         }
         
@@ -156,7 +157,7 @@ class AcroGame{
         this._votes[this._votes.length] = [turn, userIndex];
         console.log("votes after: "+this._votes.length);
         
-        this._sendToUser(userIndex, `You voted for: ${this._turns[turn][2]}`);
+        this._sendToUser(this._players.indexOf(user), `You voted for: ${this._turns[turn][2]}`);
         
     }
     
@@ -182,23 +183,23 @@ class AcroGame{
         return false;
     }
 
-    _addAnswer(userIndex, turn, username){
+    _addAnswer(userIndex, turn, user){
         if(this._checkAnswerSubmission(userIndex)){
-            this._sendToUser(userIndex, "Answer already submitted..");
+            this._sendToUser(this._players.indexOf(user), "Answer already submitted..");
             return;
         }
 
         if(!this._checkAnswerValidation(turn)){
-            this._sendToUser(userIndex, "Please enter a valid answer.");
+            this._sendToUser(this._players.indexOf(user), "Please enter a valid answer.");
             return;
         }
 
         var len = this._turns.length;
         console.log("before: "+len);
-        this._turns[len] = [turn, userIndex, username];
+        this._turns[len] = [turn, userIndex, user.username];
         console.log("after: "+  this._turns.length);
     
-        this._sendToUser(userIndex, `You Whispered: ${turn}`);
+        this._sendToUser(this._players.indexOf(user), `You Whispered: ${turn}`);
         
     }
 
