@@ -10,6 +10,7 @@ connections = [];
 
 var game = new acroGame(connections);
 var i = 0;
+
 server.listen(process.env.PORT || 3000);
 console.log('Server running...');
 
@@ -33,6 +34,7 @@ io.sockets.on('connection', function(socket){
         connections.splice(connections.indexOf(socket), 1);
         console.log('Disconnected: %s sockets connected', connections.length);
         updateUsernames();
+        game.removeUser(socket);
     });
 
     //Send Message
@@ -53,9 +55,10 @@ io.sockets.on('connection', function(socket){
             console.log('connected: %s sockets connected', connections.length);
             callback(true);
             socket.username = data;
-            users.push(socket.username);
-            game.addUser(socket, i);
+            socket.idx=i;
             i++;
+            users.push(socket.username);
+            game.addUser(socket, connections.indexOf(socket));
             updateUsernames();
         } 
         
